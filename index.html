@@ -2,191 +2,653 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Stock Live</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#1f6f5c">
+<meta name="theme-color" content="#1f5e4b">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
+<title>Stock Live</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--g:#1f6f5c;--bg:#f3f5f4;--line:#e1e7e4;--mute:#6b7773;--ok:#c9eed6;--okt:#1c6b3e;--bad:#f8cfc9;--badt:#b3261e}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;background:var(--bg);color:#111;font:15px/1.35 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;padding-bottom:calc(64px + env(safe-area-inset-bottom,0px))}
-header{position:sticky;top:0;z-index:10;background:var(--g);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:calc(14px + env(safe-area-inset-top,0px)) 14px 14px}
-header h1{margin:0;font-size:19px}
-#upd{font-size:12.5px;display:flex;align-items:center;gap:6px}
-#upd i{width:8px;height:8px;border-radius:50%;background:#5eea9c}
-#upd.err i{background:#ff8a80}
-#rf{background:rgba(255,255,255,.18);color:#fff;border:0;border-radius:8px;padding:8px 12px;font:inherit;cursor:pointer}
-.wrap{max-width:680px;margin:0 auto;padding:12px}
-.sum{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
-.box{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 4px;text-align:center}
-.box small{display:block;color:var(--mute);font-size:12.5px}
-.box b{font-size:18px}
-input[type=search],select{width:100%;font:inherit;background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;color:#111}
-.r2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
-label.chk{display:flex;align-items:center;gap:10px;margin:14px 2px 6px}
-label.chk input{width:22px;height:22px;accent-color:var(--g)}
-.sec{color:var(--mute);font-weight:600;font-size:13.5px;margin:12px 2px 8px;display:flex;justify-content:space-between}
-.sec a{color:var(--g);cursor:pointer}
-.pl{display:flex;justify-content:space-between;gap:10px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:9px;cursor:pointer}
-.pl.sel{border:2px solid var(--g)}
-.pl .n{font-weight:600;font-size:15px;word-break:break-word}
-.pl .c{color:var(--mute);font-size:13.5px;margin:2px 0 6px}
-.pill{display:inline-block;font-size:12.5px;font-weight:600;border-radius:999px;padding:3px 10px}
-.pill.ok{background:var(--ok);color:var(--okt)}
-.pill.bad{background:var(--bad);color:var(--badt)}
-.rt{text-align:right;flex:0 0 auto;max-width:55%}
-.num{display:inline-block;font-size:19px;font-weight:700;padding:1px 7px;border-radius:7px;font-variant-numeric:tabular-nums}
-.num.ok{background:var(--ok)}.num.bad{background:var(--bad)}
-.rt .l{color:var(--mute);font-size:12.5px}
-.rt .t{color:var(--mute);font-size:12.5px}
-.ex{color:var(--mute);font-size:12px;margin-top:6px}
-.fl{animation:fl 2.5s ease-out}
-@keyframes fl{0%,40%{background:#fde68a}100%{background:transparent}}
-.msg{text-align:center;color:var(--mute);padding:36px 10px}
-.errb{background:#fff;border:1px solid #c0392b;color:#c0392b;border-radius:10px;padding:10px;margin-bottom:10px;font-size:13.5px}
-nav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom,0px);z-index:20}
-nav button{flex:1;background:none;border:0;border-top:3px solid transparent;padding:16px 4px;font:700 15px inherit;font-family:inherit;color:var(--mute);cursor:pointer}
-nav button.on{color:var(--g);border-top-color:var(--g)}
-.lf{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px}
-.lf p{margin:0 0 10px;color:var(--mute)}
-.lf button,.chg{background:var(--g);color:#fff;border:0;border-radius:10px;padding:11px 16px;font:inherit;margin-top:8px;cursor:pointer}
-.chg{background:none;color:var(--g);padding:10px 2px;text-decoration:underline;display:block;margin:6px auto 0}
+:root{
+  --paper:#f4f7f5; --card:#ffffff; --ink:#14201c; --muted:#5d6e67; --line:#dde5e1;
+  --pine:#1f5e4b; --ok:#2e7d4f; --warn:#c07f08; --bad:#c8372d;
+  --bad-soft:#fbe9e7; --warn-soft:#fdf2dc; --ok-soft:#e5f3ea; --none-soft:#eceff0;
+}
+@media (prefers-color-scheme:dark){
+  :root{--paper:#0f1613; --card:#17211d; --ink:#e8f0ec; --muted:#93a59d; --line:#27342f;
+    --pine:#5cc0a0; --ok:#5fc287; --warn:#e3a93a; --bad:#ef6b60;
+    --bad-soft:#35201e; --warn-soft:#33290f; --ok-soft:#18291f; --none-soft:#222c28;}
+}
+*{box-sizing:border-box;margin:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:'Figtree',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--paper);color:var(--ink);
+  padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0);min-height:100vh;font-variant-numeric:tabular-nums}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px 40px}
+header{position:sticky;top:0;z-index:5;background:var(--paper);padding:14px 0 10px;border-bottom:1px solid var(--line)}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+h1{font-size:20px;font-weight:700;letter-spacing:-.01em}
+.sync{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;margin-top:2px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--ok)}
+.dot.stale{background:var(--bad)} .dot.busy{background:var(--warn)}
+.refresh{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;width:40px;height:40px;font-size:18px;cursor:pointer}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--pine);outline-offset:2px}
+.tabs{display:flex;gap:4px;background:var(--line);padding:4px;border-radius:12px;margin-top:12px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:1 0 auto;border:0;background:transparent;color:var(--muted);font:600 14px 'Figtree',sans-serif;padding:10px 14px;border-radius:9px;cursor:pointer;white-space:nowrap}
+.tab[aria-selected="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.filters{margin-top:12px;display:grid;gap:10px}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:1px solid var(--line);background:var(--card);color:var(--ink);font:500 13px 'Figtree',sans-serif;padding:7px 12px;border-radius:99px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--pine);border-color:var(--pine);color:#fff}
+@media (prefers-color-scheme:dark){.chip[aria-pressed="true"]{color:#0f1613}}
+input[type=search]{width:100%;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:11px 12px;font:400 15px 'Figtree',sans-serif}
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0}
+.summary.two{grid-template-columns:repeat(2,1fr)}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+.stat b{display:block;font-size:22px;font-weight:700;letter-spacing:-.02em;line-height:1.15}
+.stat b small{font-size:12px;font-weight:500;color:var(--muted)}
+.stat span{font-size:12px;color:var(--muted)}
+.stat.bad b{color:var(--bad)} .stat.warn b{color:var(--warn)}
+.plant{margin-top:20px}
+.plant-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:0 2px 8px}
+.plant-head h2{font-size:15px;font-weight:700}
+.plant-head span{font-size:12px;color:var(--muted);text-align:right}
+.list{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.row{padding:12px 14px;border-top:1px solid var(--line);display:grid;grid-template-columns:1fr auto;gap:2px 12px;align-items:start}
+.row:first-child{border-top:0}
+.sku{font-weight:600;font-size:15px;overflow-wrap:anywhere}
+.qty{font-size:20px;font-weight:700;text-align:right;letter-spacing:-.01em;white-space:nowrap}
+.qty small{font-size:12px;font-weight:500;color:var(--muted);margin-left:3px}
+.meta{font-size:12px;color:var(--muted);overflow-wrap:anywhere}
+.note{font-size:12px;color:var(--muted);text-align:right}
+.note.bad{color:var(--bad);font-weight:600} .note.ok{color:var(--ok)}
+.cover{grid-column:1/-1;display:flex;align-items:center;gap:10px;margin-top:6px}
+.bar{flex:1;height:6px;background:var(--line);border-radius:6px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:6px;background:var(--pine)}
+.pill{font-size:12px;font-weight:600;padding:3px 9px;border-radius:99px;white-space:nowrap;background:var(--none-soft);color:var(--muted)}
+.s-ok .bar i{background:var(--ok)} .s-ok .pill{background:var(--ok-soft);color:var(--ok)}
+.s-warn .bar i{background:var(--warn)} .s-warn .pill{background:var(--warn-soft);color:var(--warn)}
+.s-bad .bar i{background:var(--bad)} .s-bad .pill{background:var(--bad-soft);color:var(--bad)}
+.notice{margin:14px 0 0;padding:10px 12px;border-radius:10px;font-size:13px;background:var(--warn-soft);color:var(--ink);border:1px solid var(--line)}
+.empty{text-align:center;color:var(--muted);padding:40px 12px;font-size:14px}
+.skeleton{height:64px;border-radius:12px;background:linear-gradient(90deg,var(--line),var(--card),var(--line));background-size:200% 100%;animation:sk 1.2s infinite;margin-top:10px}
+@keyframes sk{to{background-position:-200% 0}}
+@media (prefers-reduced-motion:reduce){.skeleton{animation:none}}
+details.day{border-top:1px solid var(--line)} details.day:first-child{border-top:0}
+details.day summary{list-style:none;cursor:pointer;padding:12px 14px;display:grid;grid-template-columns:1fr auto;gap:2px 12px}
+details.day summary::-webkit-details-marker{display:none}
+details.day .inner{padding:0 14px 12px}
+.sub{display:flex;justify-content:space-between;gap:12px;font-size:13px;padding:6px 0;border-top:1px dashed var(--line)}
+.sub span:last-child{font-weight:600;white-space:nowrap}
 </style>
 </head>
 <body>
-<header><h1>Stock Live</h1><div id="upd"><i></i><span id="ut">Loading…</span></div><button id="rf">Refresh</button></header>
 <div class="wrap">
-  <div id="eb"></div>
-  <div class="sum" id="sum"></div>
-  <input type="search" id="q" placeholder="Search anything in the sheet">
-  <div class="r2"><select id="sort"><option value="name">Sort: Name</option><option value="lo">Sort: Lowest first</option><option value="hi">Sort: Highest first</option></select><select id="loc"></select></div>
-  <label class="chk"><input type="checkbox" id="sh"> Show shortages only</label>
-  <div class="sec"><span>Plants (tap to filter)</span><a id="clr" style="display:none">Clear</a></div>
-  <div id="list"><div class="msg">Loading…</div></div>
+  <header>
+    <div class="top">
+      <div>
+        <h1>Stock Live</h1>
+        <div class="sync"><span class="dot busy" id="dot"></span><span id="syncText">Loading…</span></div>
+      </div>
+      <button class="refresh" id="refresh" aria-label="Refresh now">⟳</button>
+    </div>
+    <div class="tabs" role="tablist" id="tabs"></div>
+    <div class="filters">
+      <div class="chips" id="plantChips" aria-label="Filter by plant"></div>
+      <div class="chips" id="catChips" aria-label="Filter by category"></div>
+      <input type="search" id="q" placeholder="Search product or SKU code" autocomplete="off">
+    </div>
+  </header>
+  <div id="notice"></div>
+  <main id="content"></main>
 </div>
-<nav id="nav"></nav>
+
 <script>
-const CSV_URL="https://docs.google.com/spreadsheets/d/e/2PACX-1vTmjBB6Ax-K7eqwgK2Z59kZVM4Sh9Y4kTtFYTZckoDgzjPmIDPqXfn9lumZ6BfrVutAn7noFeCCWl6Q/pub?gid=147461724&single=true&output=csv";
-const TABS=[
- {name:"Box", url:CSV_URL},
- {name:"Laminate", url:""}, /* optional: paste link here, or paste it inside the app */
- {name:"FG", url:""}
+/* ================= SETTINGS: edit this block only ================= */
+const CONFIG = {
+  refreshSeconds: 60,
+
+  // In Google Sheets: File > Share > Publish to web > "Entire document" > Publish.
+  // Your link looks like  https://docs.google.com/spreadsheets/d/e/2PACX-xxxxxxxx/pubhtml
+  // Paste only the part after /d/e/ and before /pub, e.g.  '2PACX-xxxxxxxx'
+  pubId: '2PACX-1vTmjBB6Ax-K7eqwgK2Z59kZVM4Sh9Y4kTtFYTZckoDgzjPmIDPqXfn9lumZ6BfrVutAn7noFeCCWl6Q/pubhtml',
+
+  // Optional: paste a full CSV link for any single tab here to override the one above.
+  urls: {
+    // summary: '', dashboard: '', planvs: '', carton: '', biscuit: '', rusk: '', production: ''
+  }
+};
+/* ================================================================== */
+
+/* Tab IDs (gid) of your sheet "Oct_Tracker_Product_Wise" */
+const GIDS = {
+  summary: 147461724,     // Production & Stock Summary
+  dashboard: 944898191,   // Till Date Stock Dashboard
+  planvs: 696502685,      // Plan vs Production
+  carton: 373350048,      // Carton Summary
+  biscuit: 1908503702,    // Biscuit (laminate)
+  rusk: 345177144,        // Rusk (laminate)
+  production: 37015214    // Production (daily)
+};
+const TAB_NAMES = {
+  summary: 'Production & Stock Summary', dashboard: 'Till Date Stock Dashboard', planvs: 'Plan vs Production',
+  carton: 'Carton Summary', biscuit: 'Biscuit', rusk: 'Rusk', production: 'Production'
+};
+
+/*==PURE_START==*/
+/* Short names for your plants. Add a line if a new plant joins. */
+const PLANTS = [
+  ['VEETADAY', 'Veetaday', 'Lucknow'],
+  ['SWG', 'SWG', 'Rudrapur'],
+  ['STRAIGHT LINE', 'Straight Line', 'Asansol'],
+  ['RATTAN', 'Rattan Oil Mills', 'Kathua'],
+  ['BHAGWATI', 'Bhagwati', 'Kolkata'],
+  ['DEVARPAN', 'Devarpan', 'Kashipur'],
+  ['SAHARNPUR', 'Shubham', 'Saharanpur'],
+  ['SAHARANPUR', 'Shubham', 'Saharanpur'],
+  ['SHUBHAM', 'Shubham', 'Saharanpur'],
+  ['MEERA', 'Meera Baker', 'Kanpur'],
+  ['SHRI SHYAM', 'Shri Shyam', 'Punjab']
 ];
-let tab=0;
-const LS=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k)||"";localStorage.setItem(k,v)}catch(e){return ""}};
-const urlOf=i=>LS("url"+i)||TABS[i].url||"";
-const REFRESH_MS=15000;
-const LOW_PCT=0.15; /* a plant is "Low Carton Alert" when boxes left is 0 or under 15% of total (only used if the sheet has no status column) */
-const $=id=>document.getElementById(id);
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const num=v=>{const n=parseFloat(String(v).replace(/[,₹$€%\s]/g,""));return isNaN(n)?null:n};
-const fmt=n=>n.toLocaleString("en-IN",{maximumFractionDigits:2});
-let head=[],rows=[],col={},prev=new Map(),selPlant="";
+const titleCase = s => String(s).toLowerCase().replace(/\b[a-z]/g, c => c.toUpperCase()).trim();
+function plantInfo(text){
+  const u = String(text || '').toUpperCase();
+  for (const [k, n, l] of PLANTS) if (u.includes(k)) return { name: n, place: l };
+  return { name: titleCase(text || 'Unknown'), place: '' };
+}
+const catOf = (...t) => /rusk/i.test(t.join(' ')) ? 'Rusk' : 'Biscuit';
 
-function parseCSV(t){const o=[];let r=[],f="",q=false;
- for(let i=0;i<t.length;i++){const c=t[i];
-  if(q){if(c=='"'){if(t[i+1]=='"'){f+='"';i++}else q=false}else f+=c}
-  else if(c=='"')q=true;else if(c==','){r.push(f);f=""}
-  else if(c=='\n'||c=='\r'){if(c=='\r'&&t[i+1]=='\n')i++;r.push(f);f="";o.push(r);r=[]}else f+=c}
- if(f!==""||r.length){r.push(f);o.push(r)}
- return o.filter(x=>x.some(v=>v.trim()!==""))}
+/* ---- CSV + number helpers ---- */
+function parseCSV(text){
+  const rows = []; let row = [], cur = '', q = false;
+  for (let i = 0; i < text.length; i++){
+    const c = text[i];
+    if (q){
+      if (c === '"' && text[i+1] === '"'){ cur += '"'; i++; }
+      else if (c === '"') q = false;
+      else cur += c;
+    } else if (c === '"') q = true;
+    else if (c === ','){ row.push(cur); cur = ''; }
+    else if (c === '\n' || c === '\r'){
+      if (c === '\r' && text[i+1] === '\n') i++;
+      row.push(cur); rows.push(row); row = []; cur = '';
+    } else cur += c;
+  }
+  if (cur !== '' || row.length){ row.push(cur); rows.push(row); }
+  return rows.filter(r => r.some(x => String(x).trim() !== ''));
+}
+const norm = s => String(s == null ? '' : s).replace(/\s+/g, ' ').trim().toLowerCase();
+function toNum(v){
+  if (v == null) return null;
+  let s = String(v).trim();
+  if (s === '') return null;
+  if (s === '-') return 0;
+  const neg = /^\(.*\)$/.test(s);
+  s = s.replace(/[(),₹%\s]/g, '');
+  if (s === '' || s === '-') return 0;
+  const n = parseFloat(s);
+  if (isNaN(n)) return null;
+  return neg ? -n : n;
+}
+const nz = v => { const n = toNum(v); return n === null ? 0 : n; };
 
-function detect(){
- const f=(re,skip=[])=>head.findIndex((h,i)=>re.test(h)&&!skip.includes(i));
- col={};
- col.left=f(/left|remain|balance|available|in stock/i);
- col.used=f(/used|consum/i,[col.left]);
- col.total=f(/total|received|opening|supplied|qty|quantity/i,[col.left,col.used]);
- col.status=f(/status|alert/i);
- col.loc=f(/location|city|place|town|area/i);
- col.name=f(/plant|company|party|vendor|supplier|name|firm/i,[col.loc,col.status]);
- if(col.name<0)col.name=head.findIndex((h,i)=>i!==col.loc&&rows.some(r=>num(r[i])===null&&(r[i]||"").trim()));
- if(col.name<0)col.name=0;
- const used=Object.values(col);
- col.extra=head.map((_,i)=>i).filter(i=>!used.includes(i));
+/* Find the header row, then look up columns by name (exact first, then "contains"). */
+function findTable(rows, mustHave, tabName){
+  const idx = rows.findIndex(r => { const h = r.map(norm); return mustHave.every(m => h.some(x => x.includes(m))); });
+  if (idx < 0) throw new Error('The "' + tabName + '" tab does not have the columns the app expects (' + mustHave.join(', ') + ').');
+  return { head: rows[idx].map(norm), body: rows.slice(idx + 1) };
 }
-const val=(r,c,k)=>c>=0?num(r[c]):null;
-function calc(r){
- let t=val(r,col.total),u=val(r,col.used),l=val(r,col.left);
- if(l===null&&t!==null&&u!==null)l=t-u;
- if(t===null&&l!==null&&u!==null)t=l+u;
- if(u===null&&t!==null&&l!==null)u=t-l;
- let low;
- if(col.status>=0){low=/low|short|alert|critical|out/i.test(r[col.status]||"")}
- else low=l!==null&&(l<=0||(t&&l/t<LOW_PCT));
- const stat=col.status>=0&&(r[col.status]||"").trim()?(r[col.status]).trim():(low?"Low Carton Alert":"Healthy Stock");
- return{t,u,l,low,stat};
+function col(head, ...names){
+  for (const n of names){ const i = head.indexOf(n); if (i > -1) return i; }
+  for (const n of names){ const i = head.findIndex(h => h.includes(n)); if (i > -1) return i; }
+  return -1;
+}
+const cell = (r, i) => (i > -1 && r[i] != null) ? String(r[i]).trim() : '';
+const isTotalRow = (...cells) => cells.some(c => /^total\b|grand total/i.test(String(c || '').trim()));
+const isSection = c => /^\d+\.\s/.test(String(c || '').trim());
+
+/* ---- one adapter per tab ---- */
+function adaptSummary(rows){
+  const { head, body } = findTable(rows, ['plant / cmu name', 'sku code'], TAB_NAMES.summary);
+  const c = {
+    plant: col(head, 'plant / cmu name'), product: col(head, 'product name'), sku: col(head, 'sku code'),
+    planT: col(head, 'plan (tons)'), planC: col(head, 'plan (cases)'),
+    madeT: col(head, 'till date prod (tons)'), madeC: col(head, 'till date prod (cases)'),
+    leftT: col(head, 'remaining prod (tons)'), boxes: col(head, 'balance carton'), lam: col(head, 'balance laminate')
+  };
+  const out = [];
+  for (const r of body){
+    const sku = cell(r, c.sku), pl = cell(r, c.plant);
+    if (!sku || sku === '-' || isTotalRow(pl)) continue;
+    const p = plantInfo(pl), product = cell(r, c.product);
+    out.push({ plant: p.name, place: p.place, sku, product, category: catOf(product),
+      planT: nz(r[c.planT]), planC: nz(r[c.planC]), madeT: nz(r[c.madeT]), madeC: nz(r[c.madeC]),
+      leftT: nz(r[c.leftT]), boxes: nz(r[c.boxes]), lamKg: nz(r[c.lam]) });
+  }
+  return out;
+}
+function adaptDashboard(rows){
+  const { head, body } = findTable(rows, ['remaining cartons', 'remaining laminate'], TAB_NAMES.dashboard);
+  const c = { loc: col(head, 'location'), cmu: col(head, 'cmu / plant name'), cat: col(head, 'category'),
+    boxes: col(head, 'remaining cartons'), boxesAvail: col(head, 'available cartons'), boxStatus: col(head, 'carton status'),
+    lam: col(head, 'remaining laminate'), lamStatus: col(head, 'laminate status'), health: col(head, 'overall stock health') };
+  const out = [];
+  for (const r of body){
+    const loc = cell(r, c.loc), cmu = cell(r, c.cmu);
+    if (isTotalRow(loc, cmu) || isSection(loc) || isSection(cmu)) break;
+    if (!loc && !cmu) continue;
+    const p = plantInfo(loc + ' ' + cmu);
+    out.push({ plant: p.name, place: p.place, category: catOf(cell(r, c.cat)),
+      boxes: nz(r[c.boxes]), lamKg: nz(r[c.lam]), boxStatus: cell(r, c.boxStatus), lamStatus: cell(r, c.lamStatus),
+      health: cell(r, c.health) });
+  }
+  return out;
+}
+function adaptPlanVs(rows){
+  const { head, body } = findTable(rows, ['month plan (tons)', 'actual prod (tons)'], TAB_NAMES.planvs);
+  const c = { loc: col(head, 'location'), cmu: col(head, 'cmu name'), cat: col(head, 'category'),
+    planT: col(head, 'month plan (tons)'), madeT: col(head, 'actual prod (tons)'), status: col(head, 'production status'),
+    skus: col(head, 'active skus') };
+  const out = [];
+  for (const r of body){
+    const loc = cell(r, c.loc), cmu = cell(r, c.cmu);
+    if (isTotalRow(loc, cmu) || isSection(loc) || isSection(cmu)) break;
+    if (!loc && !cmu) continue;
+    const p = plantInfo(loc + ' ' + cmu);
+    out.push({ plant: p.name, category: catOf(cell(r, c.cat)), planT: nz(r[c.planT]), madeT: nz(r[c.madeT]),
+      status: cell(r, c.status), skus: nz(r[c.skus]) });
+  }
+  return out;
+}
+function adaptCarton(rows){
+  const { head, body } = findTable(rows, ['sku code', 'cmu name', 'shortage'], TAB_NAMES.carton);
+  const c = { cmu: col(head, 'cmu name'), loc: col(head, 'location'), cat: col(head, 'product category'),
+    sku: col(head, 'sku code'), product: col(head, 'product name'), caseSize: col(head, 'case size'),
+    open: col(head, 'opening stock'), recv: col(head, 'cartoon received', 'carton received', 'received'),
+    total: col(head, 'total cartoons', 'total cartons'), plan: col(head, 'plan in case', 'production plan'),
+    short: col(head, 'shortage'), po: col(head, 'po rem', 'po remarks') };
+  const out = [];
+  for (const r of body){
+    const sku = cell(r, c.sku), cmu = cell(r, c.cmu);
+    if (!sku || isTotalRow(cmu)) continue;
+    const p = plantInfo(cmu + ' ' + cell(r, c.loc)), product = cell(r, c.product);
+    out.push({ plant: p.name, place: p.place, sku, product, category: catOf(cell(r, c.cat), product),
+      open: nz(r[c.open]), recv: nz(r[c.recv]), total: nz(r[c.total]), planC: nz(r[c.plan]),
+      shortage: nz(r[c.short]), po: cell(r, c.po) });
+  }
+  return out;
+}
+function adaptLaminate(rows, tabName, fallbackCat){
+  const { head, body } = findTable(rows, ['merge sku', 'opening stock (kg)'], tabName);
+  const c = { cmu: col(head, 'cmu name'), loc: col(head, 'location'), cat: col(head, 'product category'),
+    sku: col(head, 'sku code'), product: col(head, 'product name'),
+    cur: col(head, 'current stock (kg)'), req: col(head, 'required laminate (kg)'), net: col(head, 'net balance'),
+    po: col(head, 'po status'), planT: col(head, 'month plan (tons)'), madeT: col(head, 'production mtd (tons)'),
+    capC: col(head, 'balance capacity (cases)'), transit: col(head, 'transit stock') };
+  const out = [];
+  for (const r of body){
+    const sku = cell(r, c.sku), cmu = cell(r, c.cmu);
+    if (!sku || isTotalRow(cmu)) continue;
+    const p = plantInfo(cmu + ' ' + cell(r, c.loc)), product = cell(r, c.product);
+    out.push({ plant: p.name, place: p.place, sku, product, category: fallbackCat || catOf(cell(r, c.cat), product),
+      curKg: nz(r[c.cur]), reqKg: nz(r[c.req]), netKg: nz(r[c.net]), po: cell(r, c.po),
+      planT: nz(r[c.planT]), madeT: nz(r[c.madeT]), capC: nz(r[c.capC]), transitKg: nz(r[c.transit]) });
+  }
+  return out;
+}
+const MONTHS = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+function adaptProduction(rows, year){
+  const { head, body } = findTable(rows, ['sku code', 'product name', 'cmu name'], TAB_NAMES.production);
+  const days = [];
+  head.forEach((h, i) => {
+    const m = /^(\d{1,2})-([a-z]{3})$/.exec(h);
+    if (m && MONTHS.includes(m[2])) days.push({ col: i, label: h.replace(/[a-z]{3}$/, s => s[0].toUpperCase() + s.slice(1)), date: new Date(year, MONTHS.indexOf(m[2]), +m[1]) });
+  });
+  const c = { cmu: col(head, 'cmu name'), loc: col(head, 'location'), cat: col(head, 'product category'),
+    sku: col(head, 'sku code'), product: col(head, 'product name'), gm: col(head, 'gm'), cs: col(head, 'case size') };
+  const out = [];
+  for (const r of body){
+    const sku = cell(r, c.sku), cmu = cell(r, c.cmu);
+    if (!sku || isTotalRow(cmu)) continue;
+    const p = plantInfo(cmu + ' ' + cell(r, c.loc)), product = cell(r, c.product);
+    const tonsPerCase = nz(r[c.gm]) * nz(r[c.cs]) / 1e6;
+    out.push({ plant: p.name, place: p.place, sku, product, category: catOf(cell(r, c.cat), product),
+      tonsPerCase, vals: days.map(d => nz(r[d.col])) });
+  }
+  return { days, rows: out };
+}
+/*==PURE_END==*/
+
+/* ---------- sample data (shown until pubId is set) ---------- */
+const DEMO = {
+summary: `,SKU-WISE & PLANT-WISE DETAIL | PRODUCTION & STOCK SUMMARY
+,GRAND TOTAL,ALL PLANTS COMBINED,-,945.86,"235,997",30.41,"7,633",915.45,"228,364",3.2%,"121,761","68,082.28"
+,Plant / CMU Name,Product Name,SKU Code,Plan (Tons),Plan (Cases),Till Date Prod (Tons),Till Date Prod (Cases),Remaining Prod (Tons),Remaining Prod (Cases),Achievement %,Balance Carton Stock (Boxes),Balance Laminate Stock (Kg)
+,VEETADAY INDUSTRIES PRIVATE LIMITED,Samuh Milky Biscuit 35 g,ROZ39494,20.47,"4,062",0.00,0,20.47,"4,062",0.0%,"3,558",65.00
+,VEETADAY INDUSTRIES PRIVATE LIMITED,Samuh Beat it! Bite it! Orange Cream Biscuit 35 g,ROZ23739,8.00,"1,587",0.00,0,8.00,"1,587",0.0%,"2,055","1,746.00"
+,VEETADAY INDUSTRIES PRIVATE LIMITED,Samuh Butter Cookies Biscuit 32 g,ROZ23743,10.50,"2,278",0.00,0,10.50,"2,278",0.0%,"1,293",575.00
+,VEETADAY INDUSTRIES PRIVATE LIMITED,Samuh Zeera Biscuit 35 g,ROZ23740,0.00,0,0.00,0,0.00,0,0.0%,"2,610","1,494.00"
+,VEETADAY INDUSTRIES PRIVATE LIMITED,Samuh Coconut Cookies Biscuit 35 g,ROZ23741,34.61,"6,866",5.94,"1,178",28.67,"5,688",17.2%,"2,653","1,601.31"
+,VEETADAY INDUSTRIES PRIVATE LIMITED,Samuh Elaichi Rusk 130 g,ROZ23760,4.00,"1,282",0.00,0,4.00,"1,282",0.0%,"2,100",744.00`,
+dashboard: `,PLANT & SKU WISE CLOSING STOCK DASHBOARD (TILL DATE PRODUCTION)
+,1. PLANT-WISE CLOSING STOCK SUMMARY (CARTON & LAMINATE BALANCE)
+,Location,CMU / Plant Name,Category,Available Cartons (Boxes),Cartons Consumed,Remaining Cartons (Boxes),Carton Status,Available Laminate (Kg),Laminate Consumed (Kg),Remaining Laminate (Kg),Laminate Status,Overall Stock Health
+,Lucknow,VEETADAY INDUSTRIES PRIVATE LIMITED,Biscuits,"38,227","1,178","37,049",Healthy Stock,"17,992.00",137.69,"17,854.31",Healthy Stock,SATISFACTORY
+,Lucknow,VEETADAY INDUSTRIES PRIVATE LIMITED,Rusk,"6,194",0,"6,194",Healthy Stock,"1,562.00",0.00,"1,562.00",Healthy Stock,SATISFACTORY
+,Rudrapur,SWG,Biscuits,0,0,0,No Stock Recorded,"11,209.00",0.00,"11,209.00",Healthy Stock,ATTENTION REQUIRED
+,"Asansol, West Bengal",STRAIGHT LINE FOOD PRODUCTS PRIVATE LIMITED,Biscuits,0,"1,037","-1,037",No Stock Recorded,0.00,154.62,-154.62,No Stock,CRITICAL REORDER
+,"Kathua, Jammu",RATTAN OIL MILLS,Biscuits,"57,233","2,419","54,814",Healthy Stock,"32,715.00",324.70,"32,390.30",Healthy Stock,SATISFACTORY
+,Kolkata,BHAGWATI,Biscuits,0,0,0,No Stock Recorded,0.00,0.00,0.00,No Stock,CRITICAL REORDER
+,Kashipur,DEVARPAN FOODS PRIVATE LIMITED,Rusk,"8,940",0,"8,940",Healthy Stock,"1,702.00",0.00,"1,702.00",Healthy Stock,SATISFACTORY
+,Shubham Enterprises,Saharnpur,Rusk,"9,865","2,481","7,384",Healthy Stock,"3,569.00",248.92,"3,320.08",Healthy Stock,SATISFACTORY
+,Kanpur,Meera Baker,Rusk,"8,935",518,"8,417",Healthy Stock,"1,963.00",43.79,"1,919.21",Healthy Stock,SATISFACTORY
+,Punjab,Shri Shyam,Rusk,0,0,0,No Stock Recorded,0.00,0.00,0.00,No Stock,CRITICAL REORDER
+,TOTAL / ALL PLANTS COMBINED,-,-,"129,394","7,633","121,761",-,"70,712.00",909.72,"69,802.28",-,-`,
+planvs: `,MONTHLY PRODUCTION PLAN VS ACTUAL ACHIEVEMENT COMPARISON
+,1. PLANT-WISE / CMU PLAN VS PRODUCTION SUMMARY
+,Location,CMU Name,Category,Month Plan (Tons),Month Plan (Cases),Actual Prod (Tons),Actual Prod (Cases),Balance Gap (Tons),Balance Gap (Cases),Achievement %,Active SKUs,Production Status
+,Lucknow,VEETADAY INDUSTRIES PRIVATE LIMITED,Biscuits,146.07,"30,935",5.94,"1,178",140.14,"29,757",4.1%,15,In Progress
+,Rudrapur,SWG,Biscuits,103.70,"25,120",0.00,0,103.70,"25,120",0.0%,9,Not Started
+,"Asansol, West Bengal",STRAIGHT LINE FOOD PRODUCTS PRIVATE LIMITED,Biscuits,119.24,"26,308",4.67,"1,037",114.58,"25,271",3.9%,7,In Progress
+,"Kathua, Jammu",RATTAN OIL MILLS,Biscuits,470.84,"106,199",10.45,"2,419",460.39,"103,780",2.2%,15,In Progress`,
+carton: `,,,,,,,,"122,123","7,271","129,394","288,263","(179,983)"
+Merge Sku,CMU Name,Location,Product Category,SKU CODE,Product Name,MRP,Case Size,Opening Stock 01-10-2026,Cartoon Received,Total Cartoons,Prodcution Plan In Case,Shortage in (-),PO Remakrs
+VEETADAYROZ39494,VEETADAY INDUSTRIES PRIVATE LIMITED,Lucknow,Biscuits,ROZ39494,Samuh Milky Biscuit 35 g,5,144,"3,558",-,"3,558","3,968",-410,Buy
+VEETADAYROZ23739,VEETADAY INDUSTRIES PRIVATE LIMITED,Lucknow,Biscuits,ROZ23739,Samuh Beat it! Bite it! Orange Cream Biscuit 35 g,5,144,"2,055",-,"2,055","1,587",468,Not Buy
+VEETADAYROZ23743,VEETADAY INDUSTRIES PRIVATE LIMITED,Lucknow,Biscuits,ROZ23743,Samuh Butter Cookies Biscuit 32 g,5,144,"1,293",-,"1,293","2,387","-1,094",Buy
+VEETADAYROZ23740,VEETADAY INDUSTRIES PRIVATE LIMITED,Lucknow,Biscuits,ROZ23740,Samuh Zeera Biscuit 35 g,5,144,"2,610",-,"2,610",-,"2,610",Not Buy
+VEETADAYROZ23741,VEETADAY INDUSTRIES PRIVATE LIMITED,Lucknow,Biscuits,ROZ23741,Samuh Coconut Cookies Biscuit 35 g,5,144,"3,831",-,"3,831","6,944","-3,113",Buy`,
+biscuit: `TOTAL / KPI SUMMARY,,,,,,,,,,"61,009.00",907.00
+Merge SKU,CMU Name,Location,Product Category,SKU Code,Product Name,MRP (₹),Grammage (g),Case Size,Laminate Usage (g),Opening Stock (Kg),Transit Stock (Kg),Total Available (Kg),Opening Capacity (Cases),Opening Capacity (Tons),Month Plan (Tons),Month Plan (Cases),Required Laminate (Kg),Net Balance / PO Need (Kg),Production MTD (Cases),Production MTD (Tons),Remaining Plan (Tons),Laminate Used MTD (Kg),Process Wastage (Kg),Total Consumed (Kg),Current Stock (Kg),Balance Capacity (Cases),Balance Capacity (Tons),PO Status & Remarks,Plan Achievement %
+VD39494,VEETADAY INDUSTRIES PRIVATE LIMITED,Lucknow,Biscuits,ROZ39494,Samuh Milky Biscuit 35 g,5,35,144,0.8156,65.00,0.00,65.00,553,2.79,20.47,"4,062",491.37,-426.37,0,0.00,20.47,0.00,0.00,0.00,65.00,553,2.79,PO Required,0.0%
+VD23739,VEETADAY INDUSTRIES PRIVATE LIMITED,Lucknow,Biscuits,ROZ23739,Samuh Beat it! Bite it! Orange Cream Biscuit 35 g,5,35,144,0.7288,"1,746.00",0.00,"1,746.00","16,636",83.85,8.00,"1,587",171.59,"1,574.41",0,0.00,8.00,0.00,0.00,0.00,"1,746.00","16,636",83.85,Sufficient Stock,0.0%
+VD23743,VEETADAY INDUSTRIES PRIVATE LIMITED,Lucknow,Biscuits,ROZ23743,Samuh Butter Cookies Biscuit 32 g,5,32,144,0.7602,575.00,0.00,575.00,"5,252",24.20,10.50,"2,278",256.87,318.13,0,0.00,10.50,0.00,0.00,0.00,575.00,"5,252",24.20,Sufficient Stock,0.0%
+VD23740,VEETADAY INDUSTRIES PRIVATE LIMITED,Lucknow,Biscuits,ROZ23740,Samuh Zeera Biscuit 35 g,5,35,144,0.8440,"1,494.00",0.00,"1,494.00","12,292",61.95,0.00,0,0.00,"1,494.00",0,0.00,0.00,0.00,0.00,0.00,"1,494.00","12,292",61.95,No Plan,0.0%
+VD23741,VEETADAY INDUSTRIES PRIVATE LIMITED,Lucknow,Biscuits,ROZ23741,Samuh Coconut Cookies Biscuit 35 g,5,35,144,0.7880,"1,739.00",0.00,"1,739.00","15,325",77.24,34.61,"6,866",802.52,936.48,"1,178",5.94,28.67,133.68,4.01,137.69,"1,601.31","14,111",71.12,Sufficient Stock,17.2%`,
+rusk: `TOTAL / KPI SUMMARY
+Merge SKU,CMU Name,Location,Product Category,SKU Code,Product Name,MRP (₹),Grammage (g),Case Size,Laminate Usage (g),Opening Stock (Kg),Transit Stock (Kg),Total Available (Kg),Opening Capacity (Cases),Opening Capacity (Tons),Month Plan (Tons),Month Plan (Cases),Required Laminate (Kg),Net Balance / PO Need (Kg),Production MTD (Cases),Production MTD (Tons),Remaining Plan (Tons),Laminate Used MTD (Kg),Process Wastage (Kg),Total Consumed (Kg),Current Stock (Kg),Balance Capacity (Cases),Balance Capacity (Tons),PO Status & Remarks,Plan Achievement %
+VD23760,VEETADAY INDUSTRIES PRIVATE LIMITED,Lucknow,Rusk,ROZ23760,Samuh Elaichi Rusk 130 g,20,130,24,3.4200,744.00,0.00,744.00,"9,064",28.28,4.00,"1,282",108.39,635.61,0,0.00,4.00,0.00,0.00,0.00,744.00,"9,064",28.28,Sufficient Stock,0.0%
+VD23759,VEETADAY INDUSTRIES PRIVATE LIMITED,Lucknow,Rusk,ROZ23759,Samuh Elaichi Rusk 65 g,10,65,24,2.3500,818.00,0.00,818.00,"14,504",22.63,8.00,"5,128",297.91,520.09,0,0.00,8.00,0.00,0.00,0.00,818.00,"14,504",22.63,Sufficient Stock,0.0%`,
+production: `,,,,,,,,,,,946,926,"1,809","2,160",837,"1,901",-,-
+Merge Sku,Merge Sku,MM,CMU Name,Location,Product Category,SKU CODE,Product Name,MRP,GM,Case Size,Month Plan in ton,1-Oct,2-Oct,3-Oct,4-Oct,5-Oct,6-Oct,7-Oct
+X,X,X,VEETADAY INDUSTRIES PRIVATE LIMITED,Lucknow,Biscuits,ROZ23741,Samuh Coconut Cookies Biscuit 35 g,5,35,144,35,-,-,-,-,"1,178",-,-
+X,X,X,STRAIGHT LINE FOOD PRODUCTS PRIVATE LIMITED,"Asansol, West Bengal",Biscuits,ROZ36959,Samuh Salty Sweety Biscuit 65 g,10,65,60,28,-,-,134,25,-,-,-
+X,X,X,STRAIGHT LINE FOOD PRODUCTS PRIVATE LIMITED,"Asansol, West Bengal",Biscuits,ROZ23742,Samuh Salty Sweety Biscuit 32 g,5,32,144,54,-,-,878,-,-,-,-
+X,X,X,RATTAN OIL MILLS,"Kathua, Jammu",Biscuits,ROZ46762,Samuh Bourbon Biscuit 60 g,10,60,72,23,534,"1,291",594,-,-,-,-
+X,X,X,Meera Baker,Kanpur,Rusk,ROZ23760,Samuh Elaichi Rusk 130 g,20,130,24,10,-,518,-,-,-,-,-
+X,X,X,Saharnpur,Shubham Enterprises,Rusk,ROZ23760,Samuh Elaichi Rusk 130 g,20,130,36,17,392,-,180,155,98,-,-
+X,X,X,Saharnpur,Shubham Enterprises,Rusk,ROZ23759,Samuh Elaichi Rusk 65 g,10,65,36,35,-,-,374,657,625,-,-`
+};
+
+/* ---------- state + loading ---------- */
+const $ = id => document.getElementById(id);
+const state = { view: 'overview', plant: 'All', cat: 'All', q: '', planned: true, ds: null, updated: null, errors: [], demo: false };
+
+function urlFor(key){
+  if (CONFIG.urls && CONFIG.urls[key]) return CONFIG.urls[key];
+  if (CONFIG.pubId) return 'https://docs.google.com/spreadsheets/d/e/' + CONFIG.pubId + '/pub?gid=' + GIDS[key] + '&single=true&output=csv';
+  return '';
+}
+async function getRows(key){
+  const u = urlFor(key);
+  if (!u) return parseCSV(DEMO[key]);
+  const res = await fetch(u + (u.includes('?') ? '&' : '?') + 't=' + Date.now(), { cache: 'no-store' });
+  if (!res.ok) throw new Error('Could not open the "' + TAB_NAMES[key] + '" tab (error ' + res.status + '). Check that the sheet is published.');
+  return parseCSV(await res.text());
+}
+async function loadAll(){
+  $('dot').className = 'dot busy';
+  const year = new Date().getFullYear();
+  const keys = Object.keys(GIDS);
+  state.demo = keys.every(k => !urlFor(k));
+  const raw = await Promise.allSettled(keys.map(getRows));
+  const R = {}, errors = [];
+  raw.forEach((r, i) => { if (r.status === 'fulfilled') R[keys[i]] = r.value; else errors.push(r.reason.message); });
+  const ds = state.ds || {};
+  const attempt = (name, fn) => { try { ds[name] = fn(); } catch (e) { errors.push(e.message); } };
+  if (R.summary) attempt('plan', () => adaptSummary(R.summary));
+  if (R.carton) attempt('box', () => adaptCarton(R.carton));
+  if (R.biscuit || R.rusk) attempt('lam', () => [
+    ...(R.biscuit ? adaptLaminate(R.biscuit, TAB_NAMES.biscuit, 'Biscuit') : []),
+    ...(R.rusk ? adaptLaminate(R.rusk, TAB_NAMES.rusk, 'Rusk') : [])]);
+  if (R.production) attempt('prod', () => adaptProduction(R.production, year));
+  let dash = null, pv = null;
+  if (R.dashboard) attempt('_dash', () => (dash = adaptDashboard(R.dashboard)));
+  if (R.planvs) attempt('_pv', () => (pv = adaptPlanVs(R.planvs)));
+  if (dash){
+    ds.overview = dash.map(d => {
+      const p = (pv || []).find(x => x.plant === d.plant && x.category === d.category);
+      return { ...d, planT: p ? p.planT : 0, madeT: p ? p.madeT : 0, prodStatus: p ? p.status : '' };
+    });
+  }
+  state.ds = ds;
+  state.errors = errors;
+  if (Object.keys(R).length) state.updated = new Date();
+  render();
 }
 
-function linkForm(){
- $("eb").innerHTML="";$("sum").innerHTML="";$("ut").textContent="Not connected";
- $("list").innerHTML='<div class="lf"><p>Paste the published CSV link for <b>'+esc(TABS[tab].name)+'</b> (Google Sheets: File, Share, Publish to web, pick the tab, choose CSV).</p><input type="search" id="lk" placeholder="https://docs.google.com/spreadsheets/d/e/..."><button id="sv">Save link</button></div>';
+/* ---------- rendering helpers ---------- */
+const fmt = (n, d = 0) => (n == null || isNaN(n)) ? '–' : Number(n).toLocaleString('en-IN', { maximumFractionDigits: d });
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const pct = (a, b) => b > 0 ? Math.max(0, Math.min(100, a / b * 100)) : 0;
+
+function rowHTML(o){
+  return '<div class="row' + (o.cls ? ' ' + o.cls : '') + '">' +
+    '<div><div class="sku">' + esc(o.title) + '</div>' + (o.sub ? '<div class="meta">' + esc(o.sub) + '</div>' : '') + '</div>' +
+    '<div><div class="qty">' + o.big + (o.unit ? '<small>' + esc(o.unit) + '</small>' : '') + '</div>' +
+    (o.note ? '<div class="note ' + (o.noteCls || '') + '">' + esc(o.note) + '</div>' : '') + '</div>' +
+    (o.bar != null || o.pill ? '<div class="cover">' + (o.bar != null ? '<div class="bar"><i style="width:' + Math.max(o.bar > 0 ? 3 : 0, o.bar) + '%"></i></div>' : '<div class="bar"></div>') +
+      (o.pill ? '<span class="pill">' + esc(o.pill) + '</span>' : '') + '</div>' : '') +
+    '</div>';
 }
-async function load(){
- if(!urlOf(tab)){head=[];rows=[];linkForm();return}
- try{
-  const u=urlOf(tab);
-  const res=await fetch(u+(u.includes("?")?"&":"?")+"t="+Date.now(),{cache:"no-store"});
-  if(!res.ok)throw new Error("HTTP "+res.status);
-  const d=parseCSV(await res.text());
-  if(d.length<2)throw new Error("Sheet is empty");
-  head=d[0].map((h,i)=>h.trim()||"Column "+(i+1));rows=d.slice(1);detect();
-  $("eb").innerHTML="";$("upd").classList.remove("err");
-  $("ut").textContent="Updated "+new Date().toLocaleTimeString();
-  try{localStorage.setItem("sl"+tab,JSON.stringify({head,rows}))}catch(e){}
- }catch(e){
-  $("upd").classList.add("err");$("ut").textContent="Offline";
-  $("eb").innerHTML='<div class="errb">Could not reach the sheet ('+esc(e.message)+'). Showing last saved data.</div>';
-  if(!rows.length){try{const c=JSON.parse(localStorage.getItem("sl"+tab));if(c){head=c.head;rows=c.rows;detect()}}catch(_){}}
- }
- buildLoc();render();
+function groupByPlant(rows){
+  const g = {};
+  rows.forEach(r => (g[r.plant] = g[r.plant] || []).push(r));
+  return Object.keys(g).sort().map(k => ({ name: k, place: g[k][0].place || '', rows: g[k] }));
 }
-function buildLoc(){
- const s=$("loc");
- if(col.loc===undefined||col.loc<0){s.style.display="none";return}
- const cur=s.value,v=[...new Set(rows.map(r=>(r[col.loc]||"").trim()).filter(Boolean))].sort();
- s.style.display="";s.innerHTML='<option value="">All locations</option>'+v.map(x=>'<option>'+esc(x)+'</option>').join("");s.value=v.includes(cur)?cur:"";
+function section(name, place, right, bodyHTML){
+  return '<section class="plant"><div class="plant-head"><h2>' + esc(name) + (place ? ' · ' + esc(place) : '') + '</h2><span>' + right + '</span></div><div class="list">' + bodyHTML + '</div></section>';
 }
+const stat = (big, label, cls, small) => '<div class="stat ' + (cls || '') + '"><b>' + big + (small ? ' <small>' + small + '</small>' : '') + '</b><span>' + label + '</span></div>';
+
+/* ---------- the five views ---------- */
+function viewOverview(rows){
+  const sev = h => /critical/i.test(h) ? 0 : /attention/i.test(h) ? 1 : 2;
+  const boxes = rows.reduce((a, r) => a + r.boxes, 0), lam = rows.reduce((a, r) => a + r.lamKg, 0);
+  const plan = rows.reduce((a, r) => a + r.planT, 0), made = rows.reduce((a, r) => a + r.madeT, 0);
+  const attn = rows.filter(r => sev(r.health) < 2).length;
+  let html = '<div class="summary two">' + stat(fmt(boxes), 'Boxes in stock') + stat(fmt(lam), 'Laminate in stock', '', 'kg') +
+    stat(fmt(made, 1), 'Made so far · plan ' + fmt(plan, 1) + ' t', '', 't') + stat(attn, 'Plant lines needing action', attn ? 'bad' : '') + '</div>';
+  if (!rows.length) return html + '<div class="empty">No plants match these filters.</div>';
+  const list = rows.slice().sort((a, b) => sev(a.health) - sev(b.health) || a.plant.localeCompare(b.plant));
+  html += '<section class="plant"><div class="plant-head"><h2>Plant stock health</h2><span>Worst first</span></div><div class="list">';
+  list.forEach(r => {
+    const s = sev(r.health), label = s === 0 ? 'Critical' : s === 1 ? 'Attention' : 'Healthy';
+    const issues = [];
+    if (r.boxes < 0) issues.push('Box stock is negative: check entries');
+    else if (r.boxes === 0) issues.push('No boxes');
+    if (r.lamKg <= 0) issues.push('No laminate');
+    html += rowHTML({
+      title: r.plant + ' · ' + r.category, sub: r.place + ' · ' + fmt(r.boxes) + ' boxes · ' + fmt(r.lamKg) + ' kg laminate',
+      big: fmt(r.madeT, 1), unit: 't made', note: r.planT ? 'of ' + fmt(r.planT, 1) + ' t plan' : 'no plan',
+      bar: r.planT ? pct(r.madeT, r.planT) : null, pill: label + (issues.length ? ' · ' + issues[0] : ''),
+      cls: s === 0 ? 's-bad' : s === 1 ? 's-warn' : 's-ok'
+    });
+  });
+  return html + '</div></section>';
+}
+function viewPlan(rows){
+  const plan = rows.reduce((a, r) => a + r.planT, 0), made = rows.reduce((a, r) => a + r.madeT, 0);
+  let html = '<div class="summary">' + stat(fmt(plan, 1), 'Plan', '', 't') + stat(fmt(made, 1), 'Made', '', 't') + stat(fmt(Math.max(plan - made, 0), 1), 'Still to make', '', 't') + '</div>';
+  if (!rows.length) return html + '<div class="empty">No SKUs match these filters.</div>';
+  groupByPlant(rows).forEach(g => {
+    const gp = g.rows.reduce((a, r) => a + r.planT, 0), gm = g.rows.reduce((a, r) => a + r.madeT, 0);
+    const body = g.rows.sort((a, b) => b.leftT - a.leftT || a.product.localeCompare(b.product)).map(r => rowHTML({
+      title: r.product, sub: r.sku + ' · ' + fmt(r.boxes) + ' boxes · ' + fmt(r.lamKg) + ' kg laminate',
+      big: fmt(r.madeT, 2), unit: 't made', note: r.planT ? 'of ' + fmt(r.planT, 2) + ' t · ' + fmt(r.leftT, 2) + ' t left' : 'no plan',
+      bar: r.planT ? pct(r.madeT, r.planT) : null, pill: r.planT ? Math.round(pct(r.madeT, r.planT)) + '% of plan made' : ''
+    })).join('');
+    html += section(g.name, g.place, fmt(gm, 1) + ' of ' + fmt(gp, 1) + ' t made', body);
+  });
+  return html;
+}
+function viewBox(rows){
+  const total = rows.reduce((a, r) => a + r.total, 0);
+  const short = rows.filter(r => r.planC > 0 && r.shortage < 0);
+  const need = short.reduce((a, r) => a - r.shortage, 0);
+  let html = '<div class="summary">' + stat(fmt(total), 'Boxes in stock') + stat(short.length, 'SKUs short for plan', short.length ? 'bad' : '') + stat(fmt(need), 'Boxes to buy', need ? 'warn' : '') + '</div>';
+  if (!rows.length) return html + '<div class="empty">No SKUs match these filters.</div>';
+  groupByPlant(rows).forEach(g => {
+    const body = g.rows.sort((a, b) => a.shortage - b.shortage || a.product.localeCompare(b.product)).map(r => {
+      const isShort = r.planC > 0 && r.shortage < 0;
+      return rowHTML({
+        title: r.product, sub: r.sku,
+        big: fmt(r.total), unit: 'boxes',
+        note: r.planC ? (isShort ? 'Short ' + fmt(-r.shortage) + ' for plan' : fmt(r.shortage) + ' spare after plan') : 'no plan',
+        noteCls: isShort ? 'bad' : r.planC ? 'ok' : '',
+        bar: r.planC ? pct(r.total, r.planC) : null, pill: r.po || '',
+        cls: isShort ? 's-bad' : r.planC ? 's-ok' : ''
+      });
+    }).join('');
+    html += section(g.name, g.place, fmt(g.rows.reduce((a, r) => a + r.total, 0)) + ' boxes', body);
+  });
+  return html;
+}
+function viewLam(rows){
+  const total = rows.reduce((a, r) => a + r.curKg, 0);
+  const needPO = rows.filter(r => r.reqKg > 0 && r.netKg < 0);
+  const gap = needPO.reduce((a, r) => a - r.netKg, 0);
+  let html = '<div class="summary">' + stat(fmt(total), 'Laminate in stock', '', 'kg') + stat(needPO.length, 'SKUs needing PO', needPO.length ? 'bad' : '') + stat(fmt(gap), 'Kg to order', gap ? 'warn' : '') + '</div>';
+  if (!rows.length) return html + '<div class="empty">No SKUs match these filters.</div>';
+  groupByPlant(rows).forEach(g => {
+    const body = g.rows.sort((a, b) => (a.reqKg > 0 ? a.netKg : 1e12) - (b.reqKg > 0 ? b.netKg : 1e12) || a.product.localeCompare(b.product)).map(r => {
+      const isShort = r.reqKg > 0 && r.netKg < 0;
+      return rowHTML({
+        title: r.product, sub: r.sku + (r.transitKg ? ' · ' + fmt(r.transitKg, 1) + ' kg in transit' : ''),
+        big: fmt(r.curKg, 1), unit: 'kg',
+        note: r.reqKg ? (isShort ? 'Short ' + fmt(-r.netKg, 1) + ' kg for plan' : fmt(r.netKg, 1) + ' kg spare after plan') : 'no plan',
+        noteCls: isShort ? 'bad' : r.reqKg ? 'ok' : '',
+        bar: r.reqKg ? pct(r.curKg, r.reqKg) : null, pill: r.po || '',
+        cls: isShort ? 's-bad' : r.reqKg ? 's-ok' : ''
+      });
+    }).join('');
+    html += section(g.name, g.place, fmt(g.rows.reduce((a, r) => a + r.curKg, 0)) + ' kg', body);
+  });
+  return html;
+}
+function viewDaily(rows){
+  const days = state.ds.prod.days;
+  const today = new Date(); today.setHours(23, 59, 59, 999);
+  const list = days.map((d, i) => {
+    const per = rows.map(r => ({ r, cases: r.vals[i] })).filter(x => x.cases > 0);
+    return { d, cases: per.reduce((a, x) => a + x.cases, 0), tons: per.reduce((a, x) => a + x.cases * x.r.tonsPerCase, 0), per };
+  }).filter(x => x.d.date <= today).reverse();
+  const totC = list.reduce((a, x) => a + x.cases, 0), totT = list.reduce((a, x) => a + x.tons, 0);
+  const max = Math.max(1, ...list.map(x => x.cases));
+  let html = '<div class="summary">' + stat(fmt(totT, 1), 'Made this month', '', 't') + stat(fmt(totC), 'Cases') + stat(list.filter(x => x.cases > 0).length, 'Days with entry') + '</div>';
+  if (!list.length) return html + '<div class="empty">No days found in the Production tab.</div>';
+  html += '<section class="plant"><div class="plant-head"><h2>Day by day</h2><span>Tap a day to see SKUs</span></div><div class="list">';
+  list.forEach(x => {
+    const items = x.per.sort((a, b) => b.cases - a.cases).map(p =>
+      '<div class="sub"><span>' + esc(p.r.product) + ' · ' + esc(p.r.plant) + '</span><span>' + fmt(p.cases) + ' cases</span></div>').join('');
+    html += '<details class="day"><summary><div><div class="sku">' + esc(x.d.label) + '</div>' +
+      '<div class="meta">' + (x.cases ? x.per.length + ' SKUs' : 'No entry') + '</div></div>' +
+      '<div><div class="qty">' + fmt(x.cases) + '<small>cases</small></div><div class="note">' + (x.cases ? fmt(x.tons, 1) + ' t' : '') + '</div></div>' +
+      '<div class="cover" style="grid-column:1/-1"><div class="bar"><i style="width:' + pct(x.cases, max) + '%"></i></div></div></summary>' +
+      (items ? '<div class="inner">' + items + '</div>' : '') + '</details>';
+  });
+  return html + '</div></section>';
+}
+
+const VIEWS = {
+  overview: { label: 'Overview', rows: ds => ds.overview, fn: viewOverview, planned: null },
+  plan:     { label: 'Plan',     rows: ds => ds.plan,     fn: viewPlan,     planned: r => r.planT > 0 },
+  box:      { label: 'Box',      rows: ds => ds.box,      fn: viewBox,      planned: r => r.planC > 0 },
+  laminate: { label: 'Laminate', rows: ds => ds.lam,      fn: viewLam,      planned: r => r.planT > 0 },
+  daily:    { label: 'Daily',    rows: ds => ds.prod && ds.prod.rows, fn: viewDaily, planned: null }
+};
+
+function chips(el, values, current, onPick){
+  el.innerHTML = '';
+  if (values.length <= 2){ el.style.display = 'none'; return; }
+  el.style.display = 'flex';
+  values.forEach(v => {
+    const b = document.createElement('button');
+    b.className = 'chip'; b.textContent = v; b.setAttribute('aria-pressed', v === current);
+    b.onclick = () => onPick(v); el.appendChild(b);
+  });
+}
+
 function render(){
- if(!head.length){$("list").innerHTML='<div class="msg">No data yet. Tap Refresh.</div>';return}
- let l=rows.map((r,i)=>({r,i,c:calc(r)}));
- // summary uses all rows (before filters)
- const T=l.reduce((a,o)=>a+(o.c.t||0),0),U=l.reduce((a,o)=>a+(o.c.u||0),0),L=l.reduce((a,o)=>a+(o.c.l||0),0);
- $("sum").innerHTML=[["Total boxes",T],["Used",U],["Remaining",L]].map(([k,v])=>'<div class="box"><small>'+k+'</small><b>'+fmt(v)+'</b></div>').join("");
- const s=$("q").value.trim().toLowerCase();
- if(selPlant)l=l.filter(o=>(o.r[col.name]||"").trim()===selPlant);
- if($("loc").style.display!=="none"&&$("loc").value)l=l.filter(o=>(o.r[col.loc]||"").trim()===$("loc").value);
- if($("sh").checked)l=l.filter(o=>o.c.low);
- if(s)l=l.filter(o=>o.r.some(v=>String(v).toLowerCase().includes(s)));
- const k=$("sort").value;
- if(k==="name")l.sort((a,b)=>String(a.r[col.name]).localeCompare(String(b.r[col.name])));
- else l.sort((a,b)=>(k==="lo"?1:-1)*((a.c.l??0)-(b.c.l??0)));
- $("clr").style.display=selPlant?"":"none";
- if(!l.length){$("list").innerHTML='<div class="msg">No plants match.</div>';return}
- const next=new Map();let h="";
- l.forEach(o=>{
-  const key=o.i+"|"+o.c.l,chg=prev.size&&prev.get(o.i)!==undefined&&prev.get(o.i)!==o.c.l;next.set(o.i,o.c.l);
-  const nm=(o.r[col.name]||"—").trim(),loc=col.loc>=0?(o.r[col.loc]||"").trim():"";
-  const ex=col.extra.map(i=>{const v=(o.r[i]||"").trim();return v?esc(head[i])+": "+esc(v):""}).filter(Boolean).join(" · ");
-  const cls=o.c.low?"bad":"ok";
-  h+='<div class="pl'+(selPlant===nm?' sel':'')+'" data-n="'+esc(nm)+'"><div><div class="n">'+esc(nm)+'</div>'+(loc?'<div class="c">'+esc(loc)+'</div>':'')+'<span class="pill '+cls+'">'+esc(o.c.stat)+'</span></div>'
-   +'<div class="rt"><span class="num '+(o.c.l===0?'':cls)+(chg?' fl':'')+'">'+(o.c.l===null?"—":fmt(o.c.l))+'</span><div class="l">boxes left</div><div class="t">Total '+(o.c.t===null?"—":fmt(o.c.t))+' · Used '+(o.c.u===null?"—":fmt(o.c.u))+'</div>'+(ex?'<div class="ex">'+ex+'</div>':'')+'</div></div>';
- });
- $("list").innerHTML=h+'<button class="chg" id="chg">Change link for '+esc(TABS[tab].name)+'</button>';prev=next;
+  const tabs = $('tabs');
+  if (!tabs.children.length){
+    Object.keys(VIEWS).forEach(k => {
+      const b = document.createElement('button');
+      b.className = 'tab'; b.setAttribute('role', 'tab'); b.dataset.view = k; b.textContent = VIEWS[k].label;
+      b.onclick = () => { state.view = k; render(); window.scrollTo(0, 0); };
+      tabs.appendChild(b);
+    });
+  }
+  [...tabs.children].forEach(t => t.setAttribute('aria-selected', t.dataset.view === state.view));
+
+  const dot = $('dot'), st = $('syncText');
+  if (state.updated){
+    const t = state.updated.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    st.textContent = (state.demo ? 'Sample data · ' : 'Updated ') + t;
+    dot.className = 'dot' + (state.errors.length ? ' stale' : '');
+  } else { st.textContent = 'Could not load'; dot.className = 'dot stale'; }
+
+  let note = '';
+  if (state.demo) note = 'Showing sample data. Add your pubId in CONFIG to see live numbers.';
+  else if (state.errors.length) note = state.errors.join(' ');
+  $('notice').innerHTML = note ? '<div class="notice">' + esc(note) + '</div>' : '';
+
+  const V = VIEWS[state.view];
+  const base = state.ds && V.rows(state.ds);
+  if (!base){
+    $('content').innerHTML = state.updated ? '<div class="empty">This view has no data yet.</div>' : '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>';
+    $('plantChips').style.display = $('catChips').style.display = 'none';
+    return;
+  }
+  const srt = a => ['All', ...[...new Set(a.filter(Boolean))].sort()];
+  const plants = srt(base.map(r => r.plant)), cats = srt(base.map(r => r.category));
+  if (!plants.includes(state.plant)) state.plant = 'All';
+  if (!cats.includes(state.cat)) state.cat = 'All';
+  chips($('plantChips'), plants, state.plant, v => { state.plant = v; render(); });
+  chips($('catChips'), cats, state.cat, v => { state.cat = v; render(); });
+
+  if (V.planned){
+    const b = document.createElement('button');
+    b.className = 'chip'; b.textContent = 'Planned SKUs only'; b.setAttribute('aria-pressed', state.planned);
+    b.onclick = () => { state.planned = !state.planned; render(); };
+    $('catChips').style.display = 'flex'; $('catChips').appendChild(b);
+  }
+
+  const q = state.q.trim().toLowerCase();
+  const rows = base.filter(r =>
+    (state.plant === 'All' || r.plant === state.plant) &&
+    (state.cat === 'All' || r.category === state.cat) &&
+    (!V.planned || !state.planned || V.planned(r)) &&
+    (!q || (r.product || '').toLowerCase().includes(q) || (r.sku || '').toLowerCase().includes(q) || (r.plant || '').toLowerCase().includes(q)));
+  $('content').innerHTML = V.fn(rows);
 }
-function buildNav(){$("nav").innerHTML=TABS.map((t,i)=>'<button class="'+(i===tab?'on':'')+'" data-i="'+i+'">'+esc(t.name)+'</button>').join("")}
-$("nav").onclick=e=>{const b=e.target.closest("button");if(!b)return;tab=+b.dataset.i;head=[];rows=[];prev=new Map();selPlant="";buildNav();$("list").innerHTML='<div class="msg">Loading…</div>';load()};
-document.addEventListener("click",e=>{
- if(e.target.id==="sv"){const v=$("lk").value.trim();if(!/^https:\/\/docs\.google\.com\//.test(v)){alert("Please paste a link that starts with https://docs.google.com");return}LS("url"+tab,v);load()}
- if(e.target.id==="chg"){LS("url"+tab,"");head=[];rows=[];linkForm()}
-});
-$("list").onclick=e=>{const c=e.target.closest(".pl");if(!c)return;selPlant=selPlant===c.dataset.n?"":c.dataset.n;render()};
-$("clr").onclick=()=>{selPlant="";render()};
-["q","sort","loc","sh"].forEach(id=>$(id).oninput=render);
-$("rf").onclick=load;
-document.addEventListener("visibilitychange",()=>{if(!document.hidden)load()});
-buildNav();load();setInterval(()=>{if(!document.hidden)load()},REFRESH_MS);
+
+/* ---------- wiring ---------- */
+$('q').addEventListener('input', e => { state.q = e.target.value; render(); });
+$('refresh').onclick = loadAll;
+document.addEventListener('visibilitychange', () => { if (!document.hidden) loadAll(); });
+setInterval(() => { if (!document.hidden) loadAll(); }, CONFIG.refreshSeconds * 1000);
+try {
+  const m = { name: 'Stock Live', short_name: 'Stock', start_url: '.', display: 'standalone', background_color: '#f4f7f5', theme_color: '#1f5e4b' };
+  const l = document.createElement('link'); l.rel = 'manifest';
+  l.href = URL.createObjectURL(new Blob([JSON.stringify(m)], { type: 'application/json' }));
+  document.head.appendChild(l);
+} catch (e) {}
+render();
+loadAll();
 </script>
 </body>
 </html>
