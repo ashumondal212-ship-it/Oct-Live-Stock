@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Live Sheet</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f766e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<style>
+:root{--bg:#f5f7f6;--card:#fff;--ink:#14201e;--mute:#64736f;--line:#dde5e2;--acc:#0f766e;--flash:#fde68a;--bad:#b42318}
+@media (prefers-color-scheme:dark){:root{--bg:#0e1514;--card:#162120;--ink:#e6efed;--mute:#8aa09b;--line:#263533;--acc:#2dd4bf;--flash:#5b4a0f;--bad:#f97066}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+header{position:sticky;top:0;z-index:5;background:var(--bg);padding:12px 14px 8px;border-bottom:1px solid var(--line)}
+.top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+h1{font-size:20px;margin:0;font-weight:700;letter-spacing:-.01em}
+.live{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--mute)}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--acc);animation:pulse 2s infinite}
+.live.err .dot{background:var(--bad);animation:none}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(15,118,110,.5)}70%{box-shadow:0 0 0 8px rgba(15,118,110,0)}100%{box-shadow:0 0 0 0 rgba(15,118,110,0)}}
+@media (prefers-reduced-motion:reduce){.dot{animation:none}}
+.bar{display:flex;gap:8px;margin-top:10px}
+input[type=search],select{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:9px 12px;min-width:0}
+input[type=search]{flex:1}
+button{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:9px 12px;cursor:pointer}
+button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.stats{display:flex;gap:8px;overflow-x:auto;padding:10px 14px 2px}
+.stat{flex:0 0 auto;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 12px;min-width:110px}
+.stat b{display:block;font-size:20px;font-variant-numeric:tabular-nums}
+.stat span{font-size:12px;color:var(--mute)}
+main{padding:10px 14px 30px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:10px}
+.card h2{margin:0 0 6px;font-size:17px}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:5px 0;border-top:1px solid var(--line);font-size:14.5px}
+.kv:first-of-type{border-top:0}
+.kv span:first-child{color:var(--mute);flex:0 0 40%}
+.kv span:last-child{text-align:right;word-break:break-word}
+.flash{animation:fl 2.5s ease-out}
+@keyframes fl{0%,40%{background:var(--flash)}100%{background:transparent}}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:9px 12px;text-align:left;white-space:nowrap;border-bottom:1px solid var(--line)}
+th{position:sticky;top:0;background:var(--card);color:var(--mute);font-weight:600;cursor:pointer}
+.msg{text-align:center;color:var(--mute);padding:40px 10px}
+.err-b{background:var(--card);border:1px solid var(--bad);color:var(--bad);border-radius:10px;padding:8px 12px;margin:10px 14px 0;font-size:14px}
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <h1>Live Sheet</h1>
+    <div class="live" id="live"><span class="dot"></span><span id="status">Connecting…</span></div>
+  </div>
+  <div class="bar">
+    <input type="search" id="q" placeholder="Search rows" aria-label="Search rows">
+    <button id="vc" class="on">Cards</button>
+    <button id="vt">Table</button>
+  </div>
+  <div class="bar">
+    <select id="iv" aria-label="Refresh interval">
+      <option value="5000">Refresh every 5s</option>
+      <option value="15000" selected>Refresh every 15s</option>
+      <option value="60000">Refresh every 1 min</option>
+      <option value="0">Pause updates</option>
+    </select>
+    <button id="rf">Refresh now</button>
+  </div>
+</header>
+<div id="eb"></div>
+<div class="stats" id="stats"></div>
+<main id="main"><div class="msg">Loading data…</div></main>
+
+<script>
+const URL_CSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vTmjBB6Ax-K7eqwgK2Z59kZVM4Sh9Y4kTtFYTZckoDgzjPmIDPqXfn9lumZ6BfrVutAn7noFeCCWl6Q/pub?output=csv";
+let head=[],rows=[],prev=new Map(),view="cards",sort=-1,asc=true,timer=null;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function parseCSV(t){
+  const out=[];let r=[],f="",q=false;
+  for(let i=0;i<t.length;i++){
+    const c=t[i];
+    if(q){ if(c=='"'){ if(t[i+1]=='"'){f+='"';i++} else q=false } else f+=c }
+    else if(c=='"') q=true;
+    else if(c==','){r.push(f);f=""}
+    else if(c=='\n'||c=='\r'){ if(c=='\r'&&t[i+1]=='\n')i++; r.push(f);f="";out.push(r);r=[] }
+    else f+=c;
+  }
+  if(f!==""||r.length){r.push(f);out.push(r)}
+  return out.filter(x=>x.some(v=>v.trim()!==""));
+}
+const num=v=>{const n=parseFloat(String(v).replace(/[,₹$€%\s]/g,""));return isNaN(n)?null:n};
+
+async function load(){
+  try{
+    const res=await fetch(URL_CSV+"&t="+Date.now(),{cache:"no-store"});
+    if(!res.ok)throw new Error("HTTP "+res.status);
+    const data=parseCSV(await res.text());
+    if(!data.length)throw new Error("Sheet is empty");
+    head=data[0].map((h,i)=>h.trim()||"Column "+(i+1));
+    rows=data.slice(1);
+    $("eb").innerHTML="";$("live").classList.remove("err");
+    $("status").textContent="Updated "+new Date().toLocaleTimeString();
+    try{localStorage.setItem("ls_cache",JSON.stringify({head,rows}))}catch(e){}
+    render();
+  }catch(e){
+    $("live").classList.add("err");$("status").textContent="Offline";
+    $("eb").innerHTML='<div class="err-b">Could not reach the sheet ('+esc(e.message)+'). Showing the last saved data. Check that the sheet is still published to the web.</div>';
+    if(!rows.length){try{const c=JSON.parse(localStorage.getItem("ls_cache"));if(c){head=c.head;rows=c.rows;render();return}}catch(_){}
+      $("main").innerHTML='<div class="msg">No data yet. Check your connection and tap Refresh now.</div>'}
+  }
+}
+
+function filtered(){
+  const s=$("q").value.trim().toLowerCase();
+  let r=rows.map((x,i)=>({x,i}));
+  if(s)r=r.filter(o=>o.x.some(v=>String(v).toLowerCase().includes(s)));
+  if(sort>=0)r.sort((a,b)=>{const A=a.x[sort]??"",B=b.x[sort]??"",na=num(A),nb=num(B);
+    const c=(na!==null&&nb!==null)?na-nb:String(A).localeCompare(String(B),undefined,{numeric:true});return asc?c:-c});
+  return r;
+}
+
+function stats(list){
+  let h='<div class="stat"><b>'+list.length+'</b><span>Rows</span></div>';
+  let shown=0;
+  head.forEach((n,ci)=>{
+    if(shown>=4||ci===0)return;
+    const vals=list.map(o=>num(o.x[ci])).filter(v=>v!==null);
+    if(vals.length>=list.length*0.8&&vals.length>1){
+      const sum=vals.reduce((a,b)=>a+b,0);
+      h+='<div class="stat"><b>'+sum.toLocaleString(undefined,{maximumFractionDigits:2})+'</b><span>Total '+esc(n)+'</span></div>';shown++;
+    }
+  });
+  $("stats").innerHTML=h;
+}
+
+function render(){
+  const list=filtered();
+  stats(list);
+  const next=new Map();
+  const changed=(i,ci,v)=>{const k=i+"|"+ci;next.set(k,v);return prev.size&&prev.get(k)!==v};
+  if(!list.length){$("main").innerHTML='<div class="msg">No rows match.</div>';prev=next;return}
+  let h="";
+  if(view==="cards"){
+    list.forEach(o=>{
+      h+='<div class="card"><h2'+(changed(o.i,0,o.x[0])?' class="flash"':'')+'>'+esc(o.x[0]||"—")+'</h2>';
+      head.forEach((n,ci)=>{if(ci===0)return;const v=o.x[ci]??"";
+        h+='<div class="kv"><span>'+esc(n)+'</span><span'+(changed(o.i,ci,v)?' class="flash"':'')+'>'+esc(v||"—")+'</span></div>'});
+      h+='</div>';
+    });
+  }else{
+    h='<div class="tw"><table><thead><tr>'+head.map((n,ci)=>'<th data-c="'+ci+'">'+esc(n)+(sort===ci?(asc?" ▲":" ▼"):"")+'</th>').join("")+'</tr></thead><tbody>';
+    list.forEach(o=>{h+='<tr>'+head.map((_,ci)=>{const v=o.x[ci]??"";return '<td'+(changed(o.i,ci,v)?' class="flash"':'')+'>'+esc(v)+'</td>'}).join("")+'</tr>'});
+    h+='</tbody></table></div>';
+  }
+  $("main").innerHTML=h;prev=next;
+}
+
+function schedule(){
+  clearInterval(timer);
+  const ms=+$("iv").value;
+  if(ms)timer=setInterval(()=>{if(!document.hidden)load()},ms);
+}
+$("q").oninput=render;
+$("rf").onclick=load;
+$("iv").onchange=schedule;
+$("vc").onclick=()=>{view="cards";$("vc").classList.add("on");$("vt").classList.remove("on");render()};
+$("vt").onclick=()=>{view="table";$("vt").classList.add("on");$("vc").classList.remove("on");render()};
+$("main").onclick=e=>{const th=e.target.closest("th");if(!th)return;const c=+th.dataset.c;asc=(sort===c)?!asc:true;sort=c;render()};
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)load()});
+load();schedule();
+</script>
+</body>
+</html>
